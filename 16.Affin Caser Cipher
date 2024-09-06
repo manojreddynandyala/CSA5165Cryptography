@@ -1,0 +1,53 @@
+#include <stdio.h>
+#include <string.h>  // Include this header for strlen function
+
+// Function to calculate the GCD of two numbers
+int gcd(int a, int b) {
+    while (b != 0) {
+        int temp = b;
+        b = a % b;
+        a = temp;
+    }
+    return a;
+}
+
+// Function to perform affine encryption
+char affineEncrypt(char p, int a, int b) {
+    if (p >= 'a' && p <= 'z') {
+        p = ((a * (p - 'a') + b) % 26) + 'a';
+    } else if (p >= 'A' && p <= 'Z') {
+        p = ((a * (p - 'A') + b) % 26) + 'A';
+    }
+    return p;
+}
+
+int main() {
+    char plaintext[100], ciphertext[100];
+    int a, b;
+
+    // Input values for a and b
+    printf("Enter value for a (must be coprime with 26): ");
+    scanf("%d", &a);
+    if (gcd(a, 26) != 1) {
+        printf("Invalid value for a. It must be coprime with 26.\n");
+        return 1;
+    }
+
+    printf("Enter value for b: ");
+    scanf("%d", &b);
+
+    // Input the plaintext
+    printf("Enter the plaintext: ");
+    scanf("%s", plaintext);
+
+    // Encrypt the plaintext
+    for (int i = 0; plaintext[i] != '\0'; i++) {
+        ciphertext[i] = affineEncrypt(plaintext[i], a, b);
+    }
+    ciphertext[strlen(plaintext)] = '\0';  // Null-terminate the ciphertext
+
+    // Output the ciphertext
+    printf("Encrypted text: %s\n", ciphertext);
+
+    return 0;
+}
