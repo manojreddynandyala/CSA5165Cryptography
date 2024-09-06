@@ -1,0 +1,103 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MOD 26
+#define MATRIX_SIZE 2
+
+// Function to calculate the modular inverse of a number under mod 26
+int modInverse(int a, int m) {
+    a = a % m;
+    for (int x = 1; x < m; x++) {
+        if ((a * x) % m == 1) {
+            return x;
+        }
+    }
+    return -1; // No modular inverse exists
+}
+
+// Function to find the determinant of a 2x2 matrix mod 26
+int determinant(int matrix[MATRIX_SIZE][MATRIX_SIZE]) {
+    return (matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0]) % MOD;
+}
+
+// Function to find the adjoint of a 2x2 matrix
+void adjoint(int matrix[MATRIX_SIZE][MATRIX_SIZE], int adj[MATRIX_SIZE][MATRIX_SIZE]) {
+    adj[0][0] = matrix[1][1];
+    adj[0][1] = -matrix[0][1];
+    adj[1][0] = -matrix[1][0];
+    adj[1][1] = matrix[0][0];
+}
+
+// Function to invert a 2x2 matrix mod 26
+int invertMatrix(int matrix[MATRIX_SIZE][MATRIX_SIZE], int inv[MATRIX_SIZE][MATRIX_SIZE]) {
+    int det = determinant(matrix);
+    int invDet = modInverse(det, MOD);
+    if (invDet == -1) {
+        printf("Matrix is not invertible.\n");
+        return 0;
+    }
+
+    int adj[MATRIX_SIZE][MATRIX_SIZE];
+    adjoint(matrix, adj);
+
+    // Calculate inverse matrix using adjoint and modular inverse of determinant
+    for (int i = 0; i < MATRIX_SIZE; i++) {
+        for (int j = 0; j < MATRIX_SIZE; j++) {
+            inv[i][j] = (adj[i][j] * invDet) % MOD;
+            if (inv[i][j] < 0) {
+                inv[i][j] += MOD;
+            }
+        }
+    }
+    return 1;
+}
+
+// Function to multiply two 2x2 matrices mod 26
+void multiplyMatrices(int mat1[MATRIX_SIZE][MATRIX_SIZE], int mat2[MATRIX_SIZE][MATRIX_SIZE], int result[MATRIX_SIZE][MATRIX_SIZE]) {
+    for (int i = 0; i < MATRIX_SIZE; i++) {
+        for (int j = 0; j < MATRIX_SIZE; j++) {
+            result[i][j] = 0;
+            for (int k = 0; k < MATRIX_SIZE; k++) {
+                result[i][j] += mat1[i][k] * mat2[k][j];
+            }
+            result[i][j] %= MOD;
+        }
+    }
+}
+
+int main() {
+    // Example plaintext-ciphertext pairs (each represented as a 2x1 matrix)
+    // Plaintext pairs: "he" and "ll" represented as numeric equivalents
+    int plaintextPairs[MATRIX_SIZE][MATRIX_SIZE] = {
+        {7, 4}, // 'h' = 7, 'e' = 4
+        {11, 11} // 'l' = 11, 'l' = 11
+    };
+
+    // Corresponding ciphertext pairs: "ni" and "pk" represented as numeric equivalents
+    int ciphertextPairs[MATRIX_SIZE][MATRIX_SIZE] = {
+        {13, 8}, // 'n' = 13, 'i' = 8
+        {15, 10} // 'p' = 15, 'k' = 10
+    };
+
+    int inversePlaintext[MATRIX_SIZE][MATRIX_SIZE];
+    int keyMatrix[MATRIX_SIZE][MATRIX_SIZE];
+
+    // Step 1: Invert the plaintext matrix
+    if (!invertMatrix(plaintextPairs, inversePlaintext)) {
+        printf("Cannot recover the key matrix because the plaintext matrix is not invertible.\n");
+        return 1;
+    }
+
+    // Step 2: Multiply the inverse of the plaintext matrix by the ciphertext matrix to recover the key
+    multiplyMatrices(inversePlaintext, ciphertextPairs, keyMatrix);
+
+    printf("Recovered Key Matrix:\n");
+    for (int i = 0; i < MATRIX_SIZE; i++) {
+        for (int j = 0; j < MATRIX_SIZE; j++) {
+            printf("%d ", keyMatrix[i][j]);
+        }
+        printf("\n");
+    }
+
+    return 0;
+}
