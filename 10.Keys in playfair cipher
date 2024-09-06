@@ -1,0 +1,24 @@
+#include <stdio.h>
+#include <math.h>
+
+// Function to calculate 25 factorial
+long double factorial(int n) {
+    long double result = 1;
+    for (int i = 2; i <= n; i++) {
+        result *= i;
+    }
+    return result;
+}
+
+int main() {
+    // Calculate the total number of Playfair keys (25!)
+    long double keys = factorial(25);
+
+    // Convert to an approximation as a power of 2 using logarithms
+    long double log2_keys = log2l(keys);
+    
+    printf("Approximate number of Playfair keys: %.0Lf\n", keys);
+    printf("Approximate number of Playfair keys (in powers of 2): 2^%.2Lf\n", log2_keys);
+
+    return 0;
+}
