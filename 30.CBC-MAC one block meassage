@@ -1,0 +1,35 @@
+#include <stdio.h>
+
+#define BLOCK_SIZE 64
+
+// XOR function
+void xor_blocks(char *block1, char *block2, char *result) {
+    for (int i = 0; i < BLOCK_SIZE; i++) {
+        result[i] = block1[i] ^ block2[i];
+    }
+}
+
+// CBC MAC calculation for a one-block message
+void CBC_MAC(char *key, char *message, char *mac) {
+    // Assume simple XOR as block cipher for demonstration
+    xor_blocks(key, message, mac);
+}
+
+int main() {
+    char key[BLOCK_SIZE] = "SecretKey";
+    char message[BLOCK_SIZE] = "MessageX";
+    char mac[BLOCK_SIZE];
+
+    // Calculate CBC MAC for one-block message
+    CBC_MAC(key, message, mac);
+    printf("MAC of message: %s\n", mac);
+    
+    // Adversary computes CBC MAC for two-block message: X || (X ⊕ MAC)
+    char xor_message[BLOCK_SIZE];
+    xor_blocks(message, mac, xor_message);
+
+    // The MAC for two-block message can be deduced.
+    printf("Two-block XOR-ed message: %s\n", xor_message);
+
+    return 0;
+}
