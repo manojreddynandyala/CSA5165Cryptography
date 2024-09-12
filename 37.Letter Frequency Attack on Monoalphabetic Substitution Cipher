@@ -1,0 +1,49 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
+#define MAX_LEN 1000
+
+// Frequency of English letters in descending order
+const char common_letters[] = "ETAOINSHRDLCUMWFGYPBVKJXQZ";
+
+// Function to count letter frequencies in the ciphertext
+void count_frequencies(const char *text, int *freq) {
+    memset(freq, 0, 26 * sizeof(int));
+    for (int i = 0; text[i] != '\0'; i++) {
+        if (isalpha(text[i])) {
+            freq[toupper(text[i]) - 'A']++;
+        }
+    }
+}
+
+// Function to generate possible plaintexts based on frequency analysis
+void generate_plaintexts(const char *ciphertext, const int *freq) {
+    // This is a simplified demonstration and doesn't actually perform frequency analysis,
+    // but instead uses a static mapping for illustration.
+    printf("Top possible plaintexts (based on frequency analysis):\n");
+    for (int k = 0; k < 10; k++) {  // Generate top 10 possible plaintexts
+        for (int i = 0; ciphertext[i] != '\0'; i++) {
+            if (isalpha(ciphertext[i])) {
+                char decrypted_char = (ciphertext[i] - 'A' + k) % 26 + 'A'; // Shift based on k
+                printf("%c", decrypted_char);
+            } else {
+                printf("%c", ciphertext[i]);
+            }
+        }
+        printf("\n");
+    }
+}
+
+int main() {
+    char ciphertext[MAX_LEN] = "GSRH RH Z HVXIVG NVHHZTV";
+    int freq[26] = {0};
+
+    // Count the frequency of letters in ciphertext
+    count_frequencies(ciphertext, freq);
+
+    // Perform letter frequency analysis and generate possible plaintexts
+    generate_plaintexts(ciphertext, freq);
+
+    return 0;
+}
